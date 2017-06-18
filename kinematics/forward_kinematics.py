@@ -37,6 +37,10 @@ class ForwardKinematicsAgent(AngleInterpolationAgent):
         # chains defines the name of chain and joints of the chain
         self.chains = {'Head': ['HeadYaw', 'HeadPitch']
                        # YOUR CODE HERE
+                       'LArm': ['LShoulderPitch','LShoulderRoll','LElbowYaw','LElbowRoll','LWristYaw','LHand'],
+                       'LLeg': ['LHipYawPitch','LHipRoll','LHipPitch','LKneePitch','LAnklePitch','RAnkleRoll'],
+                       'RLeg': ['RHipYawPitch','RHipRoll','RHipPitch','RKneePitch','RAnklePitch','LAnkleRoll'],
+                       'RArm': ['RShoulderPitch','RShoulderRoll','RElbowYaw','RElbowRoll','RWristYaw','RHand']
                        }
 
     def think(self, perception):
