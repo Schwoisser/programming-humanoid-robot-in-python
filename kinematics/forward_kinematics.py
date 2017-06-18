@@ -42,6 +42,12 @@ class ForwardKinematicsAgent(AngleInterpolationAgent):
                        'RLeg': ['RHipYawPitch','RHipRoll','RHipPitch','RKneePitch','RAnklePitch','LAnkleRoll'],
                        'RArm': ['RShoulderPitch','RShoulderRoll','RElbowYaw','RElbowRoll','RWristYaw','RHand']
                        }
+        self.joints = {'HeadYaw':(0,0,126.5), 'HeadPitch': (0,0,0),#
+                      'LShoulderPitch':(0,98,100), 'LShoulderRoll': (0,0,0), 'LElbowYaw': (105,15,0), 'LElbowRoll': (0,0,0), 'LWristYaw': (55.95, 0,0),#
+                      'RShoulderPitch':(0,-98,100), 'RShoulderRoll': (0,0,0), 'RElbowYaw': (105,-15,0), 'RElbowRoll': (0,0,0), 'RWristYaw': (55.95, 0,0),#
+                      'LHipYawPitch': (0,50, -85), 'LHipRoll': (0,0,0), 'LHipPitch':(0,0,0), 'LKneePitch': (0,0,-100), 'LAnklePitch': (0,0,-102.9), 'LAnkleRoll' : (0,0,0),#
+                      'RHipYawPitch': (0,-50, -85), 'RHipRoll': (0,0,0), 'RHipPitch': (0,0,0), 'RKneePitch': (0,0,-100), 'RAnklePitch': (0,0,-102.9), 'RAnkleRoll': (0,0,0)#
+        }
 
     def think(self, perception):
         self.forward_kinematics(perception.joint)
