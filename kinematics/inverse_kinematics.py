@@ -62,7 +62,10 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
         '''solve the inverse kinematics and control joints use the results
         '''
         # YOUR CODE HERE
-        self.keyframes = ([], [], [])  # the result joint angles have to fill in
+        joint_angles = self.inverse_kinematics(effector_name, transform)
+        chain = self.chains[effector_name]
+        self.keyframes = (chain, [[0, 1]] * len(chain), joint_angles)  # the result joint angles have to fill in
+        return joint_angles
         
     def from_trans(self, m):
         theta_x, theta_y, theta_z = 0,0,0
