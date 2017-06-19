@@ -67,21 +67,21 @@ class ForwardKinematicsAgent(AngleInterpolationAgent):
         sin_joint_angle = np.sin(joint_angle)
         cos_joint_angle = np.cos(joint_angle)
         last_row = list(self.joints[joint_name]) +[ 1]
-        # R_x
+        # x
         if joint_name.endswith("Roll"):
             T = matrix([[1, 0,            0,                    0],
                         [0, cos_joint_angle, -sin_joint_angle,  0],
                         [0, sin_joint_angle, cos_joint_angle,   0],
                         last_row
                        ])
-        # R_y
+        # y
         elif joint_name.endswith("Pitch"):
             T = matrix([[cos_joint_angle, 0, sin_joint_angle,  0],
                         [0,               1, 0,                0],
                         [-sin_joint_angle, 0, cos_joint_angle, 0],
                         last_row
                         ])
-        # R_z
+        # z
         elif joint_name.endswith("Yaw"):
             T = matrix([[cos_joint_angle, -sin_joint_angle, 0, 0],
                         [sin_joint_angle, cos_joint_angle,  0, 0],
