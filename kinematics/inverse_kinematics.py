@@ -22,8 +22,40 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
         :param transform: 4x4 transform matrix
         :return: list of joint angles
         '''
-        joint_angles = []
-        # YOUR CODE HERE
+               joint_angles = {}
+        for chain in self.chains[effector_name]:
+            joint_angles[chain] = self.joints[chain]
+
+        error = 0
+        error_limit = 1e-4
+        lambda_ = 0.001
+        theta=0
+        target = self.from_trans(transform)
+        chain_of_effector = self.chains[effector_name]
+
+        while True:
+            self.forward_kinematics(joint_angles)
+            T = []
+            for chain in self.chains:
+                T.append(self.transforms[chain])
+
+            Te = np.matrix([self.from_trans(T[-1])])
+            e = target - Te
+            T = np.matrix([self.from_trans(i) for i in T[0:-1]])
+            J = Te - T
+            J = J.T
+            J[-1, :] = 1  # angular velocity
+            JJT = np.dot(J, J.T)
+            d_theta = lambda_ * J.T * JJT.I * e.T
+            theta += np.asarray(d_theta.T)[0]
+
+            i = 0
+            for chain in self.chains:
+                joint_angles[chain] += np.asarray(d_theta.T)[0][i]
+                i +=1
+            error = np.linalg.norm(d_theta)
+            if error < error_limit:
+                return joint_angles
         return joint_angles
 
     def set_transforms(self, effector_name, transform):
@@ -31,7 +63,19 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
         '''
         # YOUR CODE HERE
         self.keyframes = ([], [], [])  # the result joint angles have to fill in
-
+        
+    def from_trans(self, m):
+        theta_x, theta_y, theta_z = 0,0,0
+        #x
+        if m[0, 0] == 1:
+            theta_x = np.arctan2(m[2, 1], m[1, 1])
+        #y
+        elif m[1, 1] == 1:
+            theta_y = np.arctan2(m[0, 2], m[0, 0])
+        #z
+        elif m[2, 2] == 1:
+            theta_z = np.arctan2(m[1, 0], m[0, 0])
+        return np.array([m[3, 0], m[3, 1], m[3, 2], theta_x, theta_y, theta_z])
 if __name__ == '__main__':
     agent = InverseKinematicsAgent()
     # test inverse kinematics
