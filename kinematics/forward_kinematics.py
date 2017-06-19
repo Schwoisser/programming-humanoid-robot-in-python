@@ -63,7 +63,33 @@ class ForwardKinematicsAgent(AngleInterpolationAgent):
         '''
         T = matrix()
         # YOUR CODE HERE
-
+                # YOUR CODE HERE
+        sin_joint_angle = np.sin(joint_angle)
+        cos_joint_angle = np.cos(joint_angle)
+        last_row = list(self.joints[joint_name]) +[ 1]
+        # R_x
+        if joint_name.endswith("Roll"):
+            T = matrix([[1, 0,            0,                    0],
+                        [0, cos_joint_angle, -sin_joint_angle,  0],
+                        [0, sin_joint_angle, cos_joint_angle,   0],
+                        last_row
+                       ])
+        # R_y
+        elif joint_name.endswith("Pitch"):
+            T = matrix([[cos_joint_angle, 0, sin_joint_angle,  0],
+                        [0,               1, 0,                0],
+                        [-sin_joint_angle, 0, cos_joint_angle, 0],
+                        last_row
+                        ])
+        # R_z
+        elif joint_name.endswith("Yaw"):
+            T = matrix([[cos_joint_angle, -sin_joint_angle, 0, 0],
+                        [sin_joint_angle, cos_joint_angle,  0, 0],
+                        [0,                              0, 1, 0],
+                        last_row
+                        ])
+        else:
+            raise NameError('Joint name not found')
         return T
 
     def forward_kinematics(self, joints):
@@ -77,7 +103,7 @@ class ForwardKinematicsAgent(AngleInterpolationAgent):
                 angle = joints[joint]
                 Tl = local_trans(joint, angle)
                 # YOUR CODE HERE
-
+                T = T * Tl
                 self.transforms[joint] = T
 
 if __name__ == '__main__':
