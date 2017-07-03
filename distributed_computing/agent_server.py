@@ -21,10 +21,10 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'kinematics'))
 
-# from inverse_kinematics import InverseKinematicsAgent
+from inverse_kinematics import InverseKinematicsAgent
 from jsonrpc import JSONRPCResponseManager, dispatcher
 
-class ServerAgent(): #InverseKinematicsAgent
+class ServerAgent(InverseKinematicsAgent):
     '''ServerAgent provides RPC service
     '''
     # YOUR CODE HERE
