@@ -7,6 +7,13 @@
 '''
 
 import weakref
+import requests
+import json
+import threading
+
+
+
+
 
 class PostHandler(object):
     '''the post hander wraps function to be excuted in paralle
@@ -16,11 +23,16 @@ class PostHandler(object):
 
     def execute_keyframes(self, keyframes):
         '''non-blocking call of ClientAgent.execute_keyframes'''
-        # YOUR CODE HERE
+        t = threading.Thread(target=self.proxy.execute_keyframes(keyframes)
+        t.daemon = True
+        t.start()
 
     def set_transform(self, effector_name, transform):
         '''non-blocking call of ClientAgent.set_transform'''
-        # YOUR CODE HERE
+        t = threading.Thread(target=self.proxy.set_transform(effector_name, transform))
+        t.daemon = True
+        t.start()
+
 
 
 class ClientAgent(object):
@@ -29,38 +41,94 @@ class ClientAgent(object):
     # YOUR CODE HERE
     def __init__(self):
         self.post = PostHandler(self)
-    
+        self.url = "http://localhost:4000/jsonrpc"
+        self.headers = {'content-type': 'application/json'}
+
     def get_angle(self, joint_name):
         '''get sensor value of given joint'''
-        # YOUR CODE HERE
-    
+        payload ={
+                    "method": "get_angle",
+                    "params": [joint_name],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+        return requests.post(self.url, data=json.dumps(payload), headers=self.headers).json()
+
+
     def set_angle(self, joint_name, angle):
         '''set target angle of joint for PID controller
         '''
-        # YOUR CODE HERE
+        payload ={
+                    "method": "set_angle",
+                    "params": [joint_name, angle],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+        return requests.post(self.url, data=json.dumps(payload), headers=self.headers).json()
+
 
     def get_posture(self):
         '''return current posture of robot'''
         # YOUR CODE HERE
+        payload ={
+                    "method": "get_angle",
+                    "params": [],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+        return requests.post(self.url, data=json.dumps(payload), headers=self.headers).json()
+
 
     def execute_keyframes(self, keyframes):
         '''excute keyframes, note this function is blocking call,
         e.g. return until keyframes are executed
         '''
-        # YOUR CODE HERE
+        payload ={
+                    "method": "execute_keyframes",
+                    "params": [keyframes],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+
+
 
     def get_transform(self, name):
         '''get transform with given name
         '''
-        # YOUR CODE HERE
+        payload ={
+                    "method": "get_transform",
+                    "params": [name],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+        return requests.post(self.url, data=json.dumps(payload), headers=self.headers).json()
+
+
 
     def set_transform(self, effector_name, transform):
         '''solve the inverse kinematics and control joints use the results
         '''
-        # YOUR CODE HERE
+        payload ={
+                    "method": "set_transform",
+                    "params": [effector_name, transform],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+        response = requests.post(self.url, data=json.dumps(payload), headers=self.headers).json()
+
+
+
+    def echo(self,string):
+        payload = {
+                    "method": "echo",
+                    "params": [string],
+                    "jsonrpc": "2.0",
+                    "id": 0,
+        }
+        response = requests.post(self.url, data=json.dumps(payload), headers=self.headers).json()
+        print(response)
 
 if __name__ == '__main__':
     agent = ClientAgent()
+    agent.echo("Test")
     # TEST CODE HERE
-
-
