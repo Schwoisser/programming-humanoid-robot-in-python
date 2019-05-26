@@ -12,7 +12,7 @@
 # add PYTHONPATH
 import os
 import sys
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'introduction'))
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'software_installation'))
 
 import numpy as np
 from collections import deque
@@ -52,7 +52,16 @@ class PIDController(object):
         @param sensor: current values from sensor
         @return control signal
         '''
-        # YOUR CODE HERE
+        deviation = target - sensor
+
+        s = (self.Kp + self.Ki * self.dt + self.Kd / self.dt)  * deviation
+        t = (self.Kp + 2 * self.Kd / self.dt) * self.e1
+        r = (self.Kd / self.dt) * self.e2
+        x = s - t + r
+        self.u = self.u + x
+
+        self.e2 = self.e1
+        self.e1 = deviation
 
         return self.u
 
@@ -76,7 +85,7 @@ class PIDAgent(SparkAgent):
         self.target_joints: target positions (dict: joint_id -> position (target)) '''
         joint_angles = np.asarray(
             [perception.joint[joint_id]  for joint_id in JOINT_CMD_NAMES])
-        target_angles = np.asarray([self.target_joints.get(joint_id, 
+        target_angles = np.asarray([self.target_joints.get(joint_id,
             perception.joint[joint_id]) for joint_id in JOINT_CMD_NAMES])
         u = self.joint_controller.control(target_angles, joint_angles)
         action.speed = dict(zip(JOINT_CMD_NAMES.iterkeys(), u))  # dict: joint_id -> speed
